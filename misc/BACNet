@@ -1,0 +1,9 @@
+# BACNet default creds, port 47808/tcp
+admin:admin
+admin:_admin
+admin:bacnet
+admin:BACNet
+root:bacnet
+root:BACnet
+root:BAC0
+setup:setup
