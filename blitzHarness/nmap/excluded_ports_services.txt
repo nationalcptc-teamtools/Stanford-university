@@ -1,0 +1,100 @@
+TCP/1883 MQTT
+TCP/8883 MQTT
+UDP/47808 BACnet/IP
+TCP/20000 DNP3
+UDP/20000 DNP3
+UDP/34980 EtherCAT
+TCP/44818 Ethernet/IP
+UDP/2222 Ethernet/IP
+UDP/44818 Ethernet/IP
+UDP/55000 FL-net Reception
+UDP/55001 FL-net Reception
+UDP/55002 FL-net Reception
+UDP/55003 FL-net Transmission
+TCP/1089 Foundation Fieldbus HSE
+TCP/1090 Foundation Fieldbus HSE
+TCP/1091 Foundation Fieldbus HSE
+UDP/1089 Foundation Fieldbus HSE
+UDP/1090 Foundation Fieldbus HSE
+UDP/1091 Foundation Fieldbus HSE
+TCP/102 ICCP
+TCP/502 Modbus TCP
+TCP/4840 OPC UA Discovery Server
+TCP/34962 PROFINET
+TCP/34963 PROFINET
+TCP/34964 PROFINET
+UDP/34962 PROFINET
+UDP/34963 PROFINET
+UDP/34964 PROFINET
+TCP/4000 ROC PLus
+UDP/4000 ROC PLus
+TCP/10307 ABB Ranger 2003
+TCP/10311 ABB Ranger 2003
+TCP/10364 ABB Ranger 2003
+TCP/10365 ABB Ranger 2003
+TCP/10407 ABB Ranger 2003
+TCP/10409 ABB Ranger 2003
+TCP/10410 ABB Ranger 2003
+TCP/10412 ABB Ranger 2003
+TCP/10414 ABB Ranger 2003
+TCP/10415 ABB Ranger 2003
+TCP/10428 ABB Ranger 2003
+TCP/10431 ABB Ranger 2003
+TCP/10432 ABB Ranger 2003
+TCP/10447 ABB Ranger 2003
+TCP/10449 ABB Ranger 2003
+TCP/10450 ABB Ranger 2003
+TCP/12316 ABB Ranger 2003
+TCP/12645 ABB Ranger 2003
+TCP/12647 ABB Ranger 2003
+TCP/12648 ABB Ranger 2003
+TCP/13722 ABB Ranger 2003
+TCP/13724 ABB Ranger 2003
+TCP/13782 ABB Ranger 2003
+TCP/13783 ABB Ranger 2003
+TCP/38589 ABB Ranger 2003
+TCP/38593 ABB Ranger 2003
+TCP/38600 ABB Ranger 2003
+TCP/38971 ABB Ranger 2003
+TCP/39129 ABB Ranger 2003
+TCP/39278 ABB Ranger 2003
+TCP/4000 Emerson/Fisher ROC Plus
+UDP/4000 Emerson/Fisher ROC Plus
+TCP/55555 Foxboro/Invensys Foxboro DCS FoxApi
+UDP/55555 Foxboro/Invensys Foxboro DCS FoxApi
+TCP/45678 Foxboro/Invensys Foxboro DCS AIMAPI
+UDP/45678 Foxboro/Invensys Foxboro DCS AIMAPI
+TCP/1541 Foxboro/Invensys Foxboro DCS Informix
+UDP/1541 Foxboro/Invensys Foxboro DCS Informix
+TCP/18000 Iconics Genesis32 GenBroker (TCP)
+TCP/11001 Johnson Controls Metasys N1
+UDP/11001 Johnson Controls Metasys N1
+UDP/47808 Johnson Controls Metasys BACNet
+TCP/5450 OSIsoft PI Server
+TCP/50001 Siemens Spectrum Power TG
+TCP/50002 Siemens Spectrum Power TG
+TCP/50003 Siemens Spectrum Power TG
+TCP/50004 Siemens Spectrum Power TG
+TCP/50005 Siemens Spectrum Power TG
+TCP/50006 Siemens Spectrum Power TG
+TCP/50007 Siemens Spectrum Power TG
+TCP/50008 Siemens Spectrum Power TG
+TCP/50009 Siemens Spectrum Power TG
+TCP/50010 Siemens Spectrum Power TG
+TCP/50011 Siemens Spectrum Power TG
+TCP/50012 Siemens Spectrum Power TG
+TCP/50013 Siemens Spectrum Power TG
+TCP/50014 Siemens Spectrum Power TG
+TCP/50015 Siemens Spectrum Power TG
+TCP/50016 Siemens Spectrum Power TG
+TCP/50018 Siemens Spectrum Power TG
+TCP/50019 Siemens Spectrum Power TG
+TCP/50020 Siemens Spectrum Power TG
+UDP/50020 Siemens Spectrum Power TG
+UDP/50021 Siemens Spectrum Power TG
+TCP/50025 Siemens Spectrum Power TG
+TCP/50026 Siemens Spectrum Power TG
+TCP/50027 Siemens Spectrum Power TG
+TCP/50028 Siemens Spectrum Power TG
+TCP/50110 Siemens Spectrum Power TG
+TCP/50111 Siemens Spectrum Power TG
