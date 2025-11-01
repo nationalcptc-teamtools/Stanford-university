@@ -1,3 +1,3 @@
-[submodule "damsafe"]
-	path = damsafe
-	url = https://github.com/watsoncm/damsafe
+[submodule "blitz"]
+	path = blitz
+	url = https://github.com/donovan-jasper/blitz

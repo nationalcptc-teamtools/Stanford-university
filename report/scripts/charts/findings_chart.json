@@ -1,0 +1,70 @@
+{
+    "type": "radar",
+    "data": {
+        "labels": [
+            "Severity",
+            "Exploitation Ease",
+            "Effort to Fix",
+            "Business Impact",
+            "Exposure"
+        ],
+        "datasets": [
+            {
+                "label": "",
+                "data": [],
+                "pointRadius": 3,
+                "pointStyle": "circle",
+                "borderDash": [0, 0],
+                "type": "radar",
+                "borderColor": "",
+                "backgroundColor": "",
+                "borderWidth": 3
+            }
+        ]
+    },
+    "options": {
+        "scale": {
+            "id": "radial",
+            "display": true,
+            "stacked": false,
+            "distribution": "linear",
+            "gridLines": {
+                "display": true,
+                "color": "rgba(0, 0, 0, 0.1)",
+                "lineWidth": 1,
+                "drawBorder": true,
+                "drawOnChartArea": true,
+                "drawTicks": true,
+                "tickMarkLength": 10,
+                "zeroLineWidth": 1,
+                "zeroLineColor": "rgba(0, 0, 0, 0.25)",
+                "zeroLineBorderDash": [0, 0]
+            },
+            "angleLines": {
+                "display": true,
+                "color": "rgba(0, 0, 0, 0.1)",
+                "lineWidth": 1
+            },
+            "pointLabels": {
+                "display": true,
+                "fontColor": "#666",
+                "fontSize": 18,
+                "fontStyle": "normal"
+            },
+            "ticks": {
+                "display": true,
+                "fontSize": 12,
+                "fontFamily": "sans-serif",
+                "fontColor": "#666666",
+                "fontStyle": "normal",
+                "padding": 0,
+                "min": 0,
+                "max": 10,
+                "stepSize": 2
+            }
+        },
+        "legend": {
+            "display": false
+        }
+    }
+}

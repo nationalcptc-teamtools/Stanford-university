@@ -1,0 +1,33 @@
+#!/usr/bin/env bpftrace
+#include <net/sock.h>
+
+BEGIN
+{
+  printf("{\"evt\":\"bpftrace_start\",\"proto\":\"udp\",\"ts\":%llu}\n", nsecs);
+}
+
+/* outbound UDP datagram
+ * ──────────────────────────────────────────
+ * NEW: adds "bytes" (payload length) */
+kprobe:udp_sendmsg
+{
+  $sock  = (struct sock *)arg0;
+  $sip   = ntop($sock->__sk_common.skc_rcv_saddr);
+  $sport = (($sock->__sk_common.skc_num   & 0xff) << 8) | (($sock->__sk_common.skc_num   >> 8) & 0xff);
+  $dip   = ntop($sock->__sk_common.skc_daddr);
+  $dport = (($sock->__sk_common.skc_dport & 0xff) << 8) | (($sock->__sk_common.skc_dport >> 8) & 0xff);
+
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"udp_send\",\"pid\":%d,\"comm\":\"%s\",\"src_ip\":\"%s\",\"src_port\":%d,\"dst_ip\":\"%s\",\"dst_port\":%d,\"bytes\":%lu}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec,
+         pid, comm, $sip, $sport, $dip, $dport, arg2);
+}
+
+/* (Optional) inbound UDP datagram length */
+kretprobe:udp_recvmsg /retval > 0/
+{
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"udp_recv\",\"pid\":%d,\"bytes\":%d}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec, pid, retval);
+}
+

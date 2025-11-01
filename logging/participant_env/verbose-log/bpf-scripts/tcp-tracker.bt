@@ -1,0 +1,82 @@
+#!/usr/bin/env bpftrace
+#include <net/sock.h>
+
+BEGIN
+{
+  printf("{\"evt\":\"bpftrace_start\",\"proto\":\"tcp\",\"ts\":%llu}\n", nsecs);
+}
+
+/* ───── outbound connect ───── */
+kprobe:tcp_connect
+{
+  @entry[tid] = (struct sock *)arg0;
+}
+
+kretprobe:tcp_connect
+/@entry[tid] && retval == 0/
+{
+  $sock  = @entry[tid];
+  $sip   = ntop($sock->__sk_common.skc_rcv_saddr);
+  $sport = (($sock->__sk_common.skc_num   & 0xff) << 8) | (($sock->__sk_common.skc_num   >> 8) & 0xff);
+  $dip   = ntop($sock->__sk_common.skc_daddr);
+  $dport = (($sock->__sk_common.skc_dport & 0xff) << 8) | (($sock->__sk_common.skc_dport >> 8) & 0xff);
+
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"tcp_connect\",\"pid\":%d,\"comm\":\"%s\",\"src_ip\":\"%s\",\"src_port\":%d,\"dst_ip\":\"%s\",\"dst_port\":%d}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec,
+         pid, comm, $sip, $sport, $dip, $dport);
+
+  delete(@entry[tid]);
+}
+
+/* ───── outbound data (adds seq & bytes) ───── */
+kprobe:tcp_sendmsg
+{
+  $sock  = (struct sock *)arg0;
+  $tsk   = (struct tcp_sock *)$sock;
+  $sip   = ntop($sock->__sk_common.skc_rcv_saddr);
+  $sport = (($sock->__sk_common.skc_num   & 0xff) << 8) | (($sock->__sk_common.skc_num   >> 8) & 0xff);
+  $dip   = ntop($sock->__sk_common.skc_daddr);
+  $dport = (($sock->__sk_common.skc_dport & 0xff) << 8) | (($sock->__sk_common.skc_dport >> 8) & 0xff);
+
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"tcp_send\",\"pid\":%d,\"comm\":\"%s\",\"src_ip\":\"%s\",\"src_port\":%d,\"dst_ip\":\"%s\",\"dst_port\":%d,\"seq_send\":%u,\"bytes\":%lu}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec,
+         pid, comm, $sip, $sport, $dip, $dport,
+         $tsk->write_seq, arg2);
+}
+
+/* ───── inbound data (adds seq & bytes) ───── */
+kprobe:tcp_cleanup_rbuf
+/arg2 > 0 && arg2 < 65536/
+{
+  $sock  = (struct sock *)arg0;
+  $tsk   = (struct tcp_sock *)$sock;
+  $sip   = ntop($sock->__sk_common.skc_rcv_saddr);
+  $sport = (($sock->__sk_common.skc_num   & 0xff) << 8) | (($sock->__sk_common.skc_num   >> 8) & 0xff);
+  $dip   = ntop($sock->__sk_common.skc_daddr);
+  $dport = (($sock->__sk_common.skc_dport & 0xff) << 8) | (($sock->__sk_common.skc_dport >> 8) & 0xff);
+
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"tcp_recv\",\"pid\":%d,\"comm\":\"%s\",\"src_ip\":\"%s\",\"src_port\":%d,\"dst_ip\":\"%s\",\"dst_port\":%d,\"seq_recv\":%u,\"bytes\":%lu}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec,
+         pid, comm, $sip, $sport, $dip, $dport,
+         $tsk->rcv_nxt, arg2);
+}
+
+/* ───── state changes (unchanged except fixed format) ───── */
+tracepoint:sock:inet_sock_set_state
+/args->protocol == IPPROTO_TCP/
+{
+  $sock  = (struct sock *)args->skaddr;
+  $sip   = ntop($sock->__sk_common.skc_rcv_saddr);
+  $sport = (($sock->__sk_common.skc_num   & 0xff) << 8) | (($sock->__sk_common.skc_num   >> 8) & 0xff);
+  $dip   = ntop($sock->__sk_common.skc_daddr);
+  $dport = (($sock->__sk_common.skc_dport & 0xff) << 8) | (($sock->__sk_common.skc_dport >> 8) & 0xff);
+
+  $usec  = (nsecs / 1000) % 1000000;
+  printf("{\"ts\":\"%s.%06dZ\",\"evt\":\"tcp_state_change\",\"pid\":%d,\"comm\":\"%s\",\"src_ip\":\"%s\",\"src_port\":%d,\"dst_ip\":\"%s\",\"dst_port\":%d}\n",
+         strftime("%Y-%m-%dT%H:%M:%S", nsecs), $usec,
+         pid, comm, $sip, $sport, $dip, $dport);
+}
+

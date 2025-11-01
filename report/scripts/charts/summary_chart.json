@@ -1,0 +1,68 @@
+{
+  "type": "bar",
+  "data": {
+    "labels": "",
+    "datasets": [
+      {
+        "backgroundColor": "",
+        "borderColor": "",
+        "borderWidth": 1.5,
+        "data": []
+      }
+    ]
+  },
+  "options": {
+    "title": {
+      "display": true,
+      "fontSize": 16,
+      "fontStyle": "normal",
+      "padding": 32,
+      "text": "Contextual Cybersecurity Risk Index (CCRI) Summary"
+    },
+    "legend": {
+      "display": false
+    },
+    "scales": {
+      "xAxes": [
+        {
+          "gridLines": {
+            "display": false
+          },
+          "ticks": {
+            "fontColor": "#000000"
+          }
+        }
+      ],
+      "yAxes": [
+        {
+          "gridLines": {
+            "drawBorder": false,
+            "zeroLineColor": "#000000"
+          },
+          "ticks": {
+            "padding": 6,
+            "stepSize": 2,
+            "min": 0
+          },
+          "scaleLabel": {
+            "display": true,
+            "labelString": "Number of Findings",
+            "fontColor": "#000000",
+            "fontSize": 14
+          }
+        }
+      ]
+    },
+    "plugins": {
+      "datalabels": {
+        "display": true,
+        "align": "end",
+        "anchor": "end",
+        "color": "#000000"
+      },
+      "roundedBars": {
+        "cornerRadius": 3
+      }
+    }
+  }
+}
