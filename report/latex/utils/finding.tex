@@ -1,0 +1,380 @@
+% Define commands for a finding and how one is rendered
+\usepackage{xstring}
+\usepackage{xparse}
+\usepackage{caption}
+\tcbuselibrary{skins,breakable}
+\usepackage{pgfplots}
+\usepgfplotslibrary{polar}
+\pgfplotsset{compat=1.18}
+
+
+% ---------- User-filled “slots” ----------
+
+\long\def\FindingSummary#1{%
+  \def\FindingSummaryBody{#1}%
+}
+
+\long\def\FindingBusinessImpactText#1{%
+  \def\FindingBusinessImpactBody{#1}%
+}
+
+\long\def\FindingMitreTechniques#1{%
+  \def\FindingMitreTechniquesBody{#1}%
+}
+
+\long\def\FindingAffectedHosts#1{%
+  \def\FindingAffectedHostsBody{#1}%
+}
+
+\long\def\FindingExploitationDetails#1{%
+  \def\FindingExploitationDetailsBody{#1}%
+}
+
+\long\def\FindingStepsToRemediate#1{%
+  \def\FindingStepsToRemediateBody{#1}%
+}
+
+% --- Score setup ---
+\def\FindingScoreCCRI{0}
+\def\FindingScoreSeverity{0}
+\def\FindingScoreEase{0}
+\def\FindingScoreImpact{0}
+\def\FindingScoreExposure{0}
+\def\FindingScoreEffort{0}
+\def\FindingMitreTechniquesBody{}
+
+\newcommand{\FindingScores}[6]{%
+  \def\FindingScoreCCRI{#1}%
+  \def\FindingScoreSeverity{#2}%
+  \def\FindingScoreEase{#3}%
+  \def\FindingScoreImpact{#4}%
+  \def\FindingScoreExposure{#5}%
+  \def\FindingScoreEffort{#6}%
+}
+
+% --- Placeholder styling ---
+\newtcbox{\Todo}[1][]{
+  on line,
+  arc=2pt,
+  colback=yellow!25,
+  colframe=yellow!60!black,
+  boxrule=0.6pt,
+  left=3pt,
+  right=3pt,
+  top=1pt,
+  bottom=1pt,
+  fontupper=\bfseries,
+  #1,
+}
+
+% --- Score bar ---
+\newlength{\scorebarwidth}
+\setlength{\scorebarwidth}{4.5cm}
+\newlength{\scorebarheight}
+\setlength{\scorebarheight}{0.35cm}
+
+\newcommand{\findingscorecolor}[1]{%
+  \ifdim#1pt<2pt
+    severityinfo%
+  \else\ifdim#1pt<5pt
+    severitylow%
+  \else\ifdim#1pt<7pt
+    severitymedium%
+  \else\ifdim#1pt<8pt
+    severityhigh%
+  \else
+    severitycritical%
+  \fi\fi\fi\fi
+}
+
+\newcommand{\scorebar}[3]{%
+  \pgfmathsetmacro{\fillratio}{(#1)/(#2)}%
+  \pgfmathsetlengthmacro{\filllen}{\scorebarwidth*\fillratio}%
+  \begin{tikzpicture}[baseline]
+    \path[fill=barbg, rounded corners=1.5pt] (0,0) rectangle (\scorebarwidth,\scorebarheight);
+    \path[fill=#3, rounded corners=1.5pt] (0,0) rectangle (\filllen,\scorebarheight);
+    \draw[black, line width=0.3pt, rounded corners=1.5pt] (0,0) rectangle (\scorebarwidth,\scorebarheight);
+  \end{tikzpicture}%
+}
+
+\newcommand{\scoreitem}[4]{%
+  \noindent\makebox[\linewidth][c]{%
+    \large
+    \begin{tabular*}{\scorebarwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      #1 & \findingformatnumber{#2}/#3%
+    \end{tabular*}%
+  }\par
+  \vspace{-0.7em}%
+  \noindent\makebox[\linewidth][c]{\scorebar{#2}{#3}{#4}}\par
+}
+
+\newcommand{\scoreitembold}[4]{%
+  \noindent\makebox[\linewidth][c]{%
+    \large
+    \begin{tabular*}{\scorebarwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      \textbf{#1} & \textbf{\findingformatnumber{#2}/#3}%
+    \end{tabular*}%
+  }\par
+  \vspace{-0.7em}%
+  \noindent\makebox[\linewidth][c]{\scorebar{#2}{#3}{#4}}\par
+}
+
+% --- Finding section heading ---
+\newcommand{\findingsection}[1]{%
+  \par%
+  \begingroup
+  \colorlet{headingFourColor}{black}%
+  \headingFour{#1}%
+  \endgroup
+}
+
+% --- Section helpers ---
+\newcommand{\FindingSummarySection}[1]{\findingsection{Summary}#1}
+\newcommand{\FindingAffectedHostsSection}[1]{\findingsection{Affected Hosts}#1}
+\newcommand{\FindingBusinessImpactSection}[1]{\findingsection{Business Impact}#1}
+\newcommand{\FindingExploitationDetailsSection}[1]{\findingsection{Exploitation Details}#1}
+\newcommand{\FindingRemediationStepsSection}[1]{\findingsection{Remediation Steps}#1}
+
+% --- Finding detail box styling ---
+\newcommand{\FindingDetailBox}[1]{%
+  \vspace{0.25em}%
+  \begin{tcolorbox}[
+    standard jigsaw,
+    breakable,
+    colback=white,
+    opacityback=0,
+    frame hidden,
+    boxrule=0pt,
+    sharp corners,
+    left=-2.5pt,right=0pt,top=0pt,bottom=0pt,
+    before upper=\setlength{\parskip}{1em}\setlength{\parindent}{0pt},
+  ]
+  #1
+  \end{tcolorbox}%
+}
+
+% --- Finding index ToC helpers ---
+\newif\iffindingindexone
+\findingindexonefalse
+\newcommand{\FindingSeverityLabel}{}
+\newcommand{\FindingSeverityName}{}
+\newcommand{\setfindingseverityname}[1]{%
+  \def\FindingSeverityName{#1}%
+  \IfStrEq{#1}{C}{\def\FindingSeverityName{Critical}}{%
+  \IfStrEq{#1}{H}{\def\FindingSeverityName{High}}{%
+  \IfStrEq{#1}{M}{\def\FindingSeverityName{Medium}}{%
+  \IfStrEq{#1}{L}{\def\FindingSeverityName{Low}}{%
+  \IfStrEq{#1}{I}{\def\FindingSeverityName{Informational}}{}}}}}%
+}
+
+% --- Sidebar block renderer ---
+\newlength{\sidebarfullwidth}
+\newcommand{\sidebarcenterline}[1]{%
+  \par\noindent
+  \parshape=1 -\sidebarcontentshift \sidebarfullwidth
+  \centering #1\par
+}
+
+\newcommand{\RenderFindingSidebar}{%
+  \begingroup
+  \setlength{\sidebarfullwidth}{\dimexpr\linewidth+\sidebarcontentshift\relax}%
+  \setlength{\parskip}{0.6em}%
+  \setlength{\parindent}{0pt}%
+  \vspace{1.25em}%
+  \begingroup
+  \addtolength{\leftskip}{-1.3em}%
+  \scoreitembold{CCRI Score:}{\FindingScoreCCRI}{10}{\findingscorecolor{\FindingScoreCCRI}}
+  \scoreitem{Severity:}{\FindingScoreSeverity}{10}{\findingscorecolor{\FindingScoreSeverity}}
+  \scoreitem{Exploitation Ease:}{\FindingScoreEase}{10}{\findingscorecolor{\FindingScoreEase}}
+  \scoreitem{Business Impact:}{\FindingScoreImpact}{10}{\findingscorecolor{\FindingScoreImpact}}
+  \scoreitem{Exposure:}{\FindingScoreExposure}{10}{\findingscorecolor{\FindingScoreExposure}}
+  \scoreitem{Effort to Fix:}{\FindingScoreEffort}{10}{\findingscorecolor{\FindingScoreEffort}}
+  \endgroup
+  \vspace{-0.3em}
+  \sidebarcenterline{\includegraphics[width=0.23\textwidth]{chart.png}}
+  \vspace{-1.3em}
+  \par\noindent
+  \makebox[\sidebarfullwidth][l]{\hspace{\dimexpr-\sidebarcontentshift-7pt\relax}\textcolor{sidebarborder}{\rule{\dimexpr\sidebarfullwidth+10pt\relax}{2.2pt}}}\par
+  \vspace{-0.5em}
+  \sidebarcenterline{\fontsize{10pt}{12pt}\selectfont\textbf{MITRE ATT\&CK Techniques}}%
+  \vspace{-0.5em}%
+  \sidebarcenterline{\FindingMitreTechniquesBody}%
+  \endgroup
+}
+
+% ---------- Template that renders one finding ----------
+
+\newcommand{\RenderFinding}{%
+  \section*{\FindingLabelIndex\quad \FindingTitle}
+
+  \begin{tabular}{@{}ll@{}}
+    CCRI Score:        & \FindingCCRIScore \\
+    Severity:          & \FindingSeverity \\
+    Ease of Exploitation: & \FindingExploitationEase \\
+    Business Impact:   & \FindingBusinessImpactScore \\
+    Exposure:          & \FindingExposure \\
+    Effort to Fix:     & \FindingEffortToFix \\
+  \end{tabular}
+
+  \bigskip
+
+  \subsection*{Description}
+  \FindingSummaryBody
+
+  \subsection*{Business Impact}
+  \FindingBusinessImpactBody
+
+  \subsection*{MITRE ATT\&CK Technique(s)}
+  \FindingMitreTechniquesBody
+
+  \subsection*{Affected Host(s)}
+  \FindingAffectedHostsBody
+
+  \subsection*{Exploitation Details}
+  \FindingDetailBox{\FindingExploitationDetailsBody}
+
+  \subsection*{Steps to Remediate}
+  \FindingDetailBox{\FindingStepsToRemediateBody}
+
+  \newpage
+}
+
+% ---------- Styled finding page ----------
+\newcommand{\RenderFindingPage}{%
+  \newpage
+  \let\findingprevseries\seriesdefault
+  \renewcommand{\seriesdefault}{m}%
+  \normalfont
+  \renewcommand{\reportnavactive}{Findings}
+  \sectiontopanchor{finding.\FindingLabelIndex}%
+  \iffindingindexone
+    \sectiontopanchor{section.findings.\FindingSeverityLabel}%
+  \fi
+  \setcounter{findingstartpage}{\value{page}}
+
+  % Top title bar
+  \vspace*{-2.6em}
+  \noindent{\LARGE\bfseries \hspace*{-0.1in} \FindingLabelIndex\ \FindingTitle}\par
+  \vspace*{-0.7em}
+  \sidebarstartmark
+  \drawtitleline
+  \iffindingindexone
+    \reporttocentry{subsection}{\FindingSeverityName}{section.findings.\FindingSeverityLabel}%
+  \fi
+  \vspace*{-2em}
+
+  % --- Two-column layout (sidebar left, content right) ---
+  \drawpagebg
+  \drawtitlemask
+  \drawsidebarbg
+  \columnratio{\sidebarcolratio,0.75}
+  \begin{paracol}{2}
+    \vspace{12pt}
+    \RenderFindingSidebar
+    \vspace{6pt}
+
+  \switchcolumn
+
+    \vspace{2em}
+    \FindingSummarySection{\FindingSummaryBody}
+    \FindingAffectedHostsSection{\FindingAffectedHostsBody}
+    \FindingBusinessImpactSection{\FindingBusinessImpactBody}
+    \FindingExploitationDetailsSection{\FindingDetailBox{\FindingExploitationDetailsBody}}
+    \FindingRemediationStepsSection{\FindingDetailBox{\FindingStepsToRemediateBody}}
+  \end{paracol}
+  \let\seriesdefault\findingprevseries
+  \normalfont
+}
+
+% ---------- Main macro: key-value parameters ----------
+% label, index, title, file, ccri, severity, ease, impact, exposure, effort
+\ExplSyntaxOn
+\tl_new:N \l_finding_index_critical_tl
+\tl_new:N \l_finding_index_high_tl
+\tl_new:N \l_finding_index_medium_tl
+\tl_new:N \l_finding_index_low_tl
+\tl_new:N \l_finding_index_info_tl
+\tl_new:N \l_finding_ccri_display_tl
+\tl_new:N \l_finding_severity_display_tl
+\tl_new:N \l_finding_ease_display_tl
+\tl_new:N \l_finding_impact_display_tl
+\tl_new:N \l_finding_exposure_display_tl
+\tl_new:N \l_finding_effort_display_tl
+\cs_new_protected:Npn \finding_index_add:nnnn #1#2#3#4
+  {
+    \str_case:nnF {#1}
+      {
+        {C}{\tl_gput_right:Nn \l_finding_index_critical_tl {\indexentrylink{severitycritical}{#2}{#3}{#4}}}
+        {H}{\tl_gput_right:Nn \l_finding_index_high_tl {\indexentrylink{severityhigh}{#2}{#3}{#4}}}
+        {M}{\tl_gput_right:Nn \l_finding_index_medium_tl {\indexentrylink{severitymedium}{#2}{#3}{#4}}}
+        {L}{\tl_gput_right:Nn \l_finding_index_low_tl {\indexentrylink{severitylow}{#2}{#3}{#4}}}
+        {I}{\tl_gput_right:Nn \l_finding_index_info_tl {\indexentrylink{severityinfo}{#2}{#3}{#4}}}
+      }
+      { }
+  }
+
+\cs_new:Npn \finding_format_number:n #1
+  {
+    \fp_compare:nNnTF {#1} = { trunc(#1) }
+      { \int_to_arabic:n { \fp_to_int:n {#1} } }
+      { \fp_eval:n {#1} }
+  }
+
+\NewDocumentCommand{\findingformatnumber}{m}{\finding_format_number:n {#1}}
+\keys_define:nn { finding } {
+  label .tl_set:N = \l_finding_label_tl,
+  index .tl_set:N = \l_finding_index_tl,
+  title .tl_set:N = \l_finding_title_tl,
+  file .tl_set:N = \l_finding_file_tl,
+  ccri .tl_set:N = \l_finding_ccri_tl,
+  severity .tl_set:N = \l_finding_severity_tl,
+  ease .tl_set:N = \l_finding_ease_tl,
+  impact .tl_set:N = \l_finding_impact_tl,
+  exposure .tl_set:N = \l_finding_exposure_tl,
+  effort .tl_set:N = \l_finding_effort_tl,
+  label .initial:n = {},
+  index .initial:n = {},
+  title .initial:n = {},
+  file .initial:n = {},
+  ccri .initial:n = 0,
+  severity .initial:n = 0,
+  ease .initial:n = 0,
+  impact .initial:n = 0,
+  exposure .initial:n = 0,
+  effort .initial:n = 0,
+}
+
+\NewDocumentCommand{\addfinding}{m}{%
+  \keys_set:nn { finding } { #1 }%
+  \def\FindingLabelIndex{\l_finding_label_tl.\l_finding_index_tl}%
+  \def\FindingTitle{\l_finding_title_tl}%
+  \def\FindingFile{\l_finding_file_tl}%
+  \tl_set:Nx \l_finding_label_trim_tl { \tl_trim_spaces:n { \l_finding_label_tl } }%
+  \tl_set:Nx \l_finding_ccri_display_tl { \finding_format_number:n { \l_finding_ccri_tl } }
+  \tl_set:Nx \l_finding_severity_display_tl { \finding_format_number:n { \l_finding_severity_tl } }
+  \tl_set:Nx \l_finding_ease_display_tl { \finding_format_number:n { \l_finding_ease_tl } }
+  \tl_set:Nx \l_finding_impact_display_tl { \finding_format_number:n { \l_finding_impact_tl } }
+  \tl_set:Nx \l_finding_exposure_display_tl { \finding_format_number:n { \l_finding_exposure_tl } }
+  \tl_set:Nx \l_finding_effort_display_tl { \finding_format_number:n { \l_finding_effort_tl } }
+  \edef\FindingSeverityLabel{\tl_use:N \l_finding_label_trim_tl}%
+  \setfindingseverityname{\FindingSeverityLabel}%
+  \int_compare:nNnTF { \l_finding_index_tl } = { 1 }
+    { \findingindexonetrue }
+    { \findingindexonefalse }
+  \findingwriteaux{\FindingSeverityLabel}{\l_finding_ccri_display_tl}{\l_finding_title_tl}{finding.\FindingLabelIndex}%
+  \FindingScores{\l_finding_ccri_tl}{\l_finding_severity_tl}{\l_finding_ease_tl}{\l_finding_impact_tl}{\l_finding_exposure_tl}{\l_finding_effort_tl}%
+  % defaults if a section is missing in the finding file
+  \def\FindingSummaryBody{\Todo{TODO:\ add\ summary}}%
+  \def\FindingBusinessImpactBody{\Todo{TODO:\ add\ business\ impact\ text}}%
+  \def\FindingMitreTechniquesBody{\Todo{TODO:\ add\ MITRE\ ATT\&CK\ techniques}}%
+  \def\FindingAffectedHostsBody{\Todo{TODO:\ add\ affected\ hosts}}%
+  \def\FindingExploitationDetailsBody{\Todo{TODO:\ add\ exploitation\ details}}%
+  \def\FindingStepsToRemediateBody{\Todo{TODO:\ add\ steps\ to\ remediate}}%
+
+  % load the content file (which will call \FindingSummary etc.)
+  \input{findings/\FindingFile}%
+
+  % render the full finding
+  \RenderFindingPage
+}
+\ExplSyntaxOff

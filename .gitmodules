@@ -1,3 +1,7 @@
 [submodule "blitz"]
 	path = blitz
 	url = https://github.com/donovan-jasper/blitz
+[submodule "luftweht"]
+	path = luftweht
+	url = https://github.com/donovan-jasper/luftweht.git
+	branch = feature/nmap-orchestrator

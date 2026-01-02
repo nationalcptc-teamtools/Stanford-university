@@ -1,0 +1,44 @@
+\ifdefined\FindingStandalone
+\else
+  \documentclass[11pt]{article}
+  \makeatletter
+  \def\input@path{{../}{./}}
+  \makeatother
+  \input{styles/finding_page}
+  \input{utils/finding}
+  \geometry{left=0.4in,right=0.4in,top=0.7in,bottom=0.7in}
+  \FindingScores{0}{0}{0}{0}{0}{0}
+  \def\FindingLabelIndex{C.1}
+  \def\FindingTitle{Finding Title}
+  \begin{document}
+\fi
+
+\FindingSummary{
+
+}
+
+\FindingAffectedHosts{
+
+}
+
+\FindingBusinessImpactText{
+
+}
+
+\FindingMitreTechniques{
+
+}
+
+\FindingExploitationDetails{
+
+}
+
+\FindingStepsToRemediate{
+
+}
+
+\ifdefined\FindingStandalone
+\else
+  \RenderFindingPage
+  \end{document}
+\fi

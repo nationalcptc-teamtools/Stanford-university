@@ -1,0 +1,274 @@
+\documentclass[11pt]{article}
+
+\usepackage{multicol}
+\usepackage[none]{hyphenat}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{paracol}
+\usepackage{wrapfig}
+\input{styles/finding_page}
+\input{utils/finding}
+\def\FindingStandalone{0}
+
+\definecolor{summaryblue}{HTML}{1F487C}
+\definecolor{barbg}{HTML}{E0E0E0}
+\definecolor{barfillcritical}{HTML}{A0210B}
+\definecolor{barfillmedium}{HTML}{E27909}
+\definecolor{barfilllow}{HTML}{F1C232}
+
+\newlength{\summarybarwidth}
+\setlength{\summarybarwidth}{0.3\linewidth}
+\newlength{\summarybarheight}
+\setlength{\summarybarheight}{0.25cm}
+% -- Two-column span width inside 4-column multicols --
+\newlength{\fourcolwidth}
+\setlength{\fourcolwidth}{\dimexpr(\textwidth-3\columnsep)/4\relax}
+\newlength{\twocolwidth}
+\setlength{\twocolwidth}{\dimexpr2\fourcolwidth+\columnsep\relax}
+\newcommand{\onecoloffset}{\dimexpr\columnwidth+\columnsep\relax}
+\newlength{\findingsplotheight}
+\setlength{\findingsplotheight}{0.4\textheight}
+\newcommand{\summarybar}[3]{%
+  \pgfmathsetmacro{\fillratio}{0}%
+  \ifnum#2>0
+    \pgfmathsetmacro{\fillratio}{(#1)/(#2)}%
+  \fi
+  \pgfmathsetmacro{\fillratio}{min(1,max(0,\fillratio))}%
+  \pgfmathsetlengthmacro{\barwidth}{\summarybarwidth}%
+  \pgfmathsetlengthmacro{\filllen}{\barwidth*\fillratio}%
+  \begin{tikzpicture}[baseline]
+    \path[fill=barbg, rounded corners=1pt]
+      (0,0) rectangle (\barwidth,\summarybarheight);
+    \path[fill=#3, rounded corners=1pt]
+      (0,0) rectangle (\filllen,\summarybarheight);
+    \draw[white, line width=0.3pt, rounded corners=1pt]
+      (0,0) rectangle (\barwidth,\summarybarheight);
+  \end{tikzpicture}%
+}
+
+\newcommand{\summaryitem}[4]{%
+  \noindent\makebox[\linewidth][c]{%
+    \begin{tabular*}{\summarybarwidth}{@{}l@{\extracolsep{\fill}}r@{}}%
+      {\color{white}\fontsize{12pt}{12pt}\selectfont #1} &
+      {\color{white}\fontsize{12pt}{12pt}\selectfont #2/#3}%
+    \end{tabular*}%
+  }\par
+  \vspace{0.05em}%
+  \noindent\makebox[\linewidth][c]{\summarybar{#2}{#3}{#4}}\par
+  \vspace{0.5em}%
+}
+\newcommand{\severitybox}[4]{%
+  \begin{tikzpicture}
+    \node[
+      rounded corners=0pt,
+      draw=#1,
+      line width=0.8pt,
+      fill=#1,
+      inner xsep=7pt,
+      inner ysep=6pt,
+      text width=\dimexpr\linewidth-14pt\relax,
+      align=left
+    ] {%
+      {\small\bfseries #2}\par
+      {\scriptsize #3}\par\vspace{4pt}
+      {\footnotesize #4}%
+    };
+  \end{tikzpicture}%
+}
+\newcommand{\metricbox}[2]{%
+  \begin{tikzpicture}
+    \node[
+      rounded corners=0pt,
+      draw=black!15,
+      line width=0.6pt,
+      fill=white,
+      inner xsep=8pt,
+      inner ysep=6pt,
+      text width=\dimexpr\linewidth-16pt\relax,
+      align=left
+    ] {%
+      {\small\bfseries #1}\par
+      {\footnotesize #2}%
+    };
+  \end{tikzpicture}%
+}
+
+
+\begin{document}
+
+% INSERT TITLE PAGE HERE
+
+\renewcommand{\reportnavactive}{Contents}
+\sectiontopanchor{section.contents}
+
+\headingOne{Table of Contents}
+\reporttableofcontents
+
+\newpage
+
+\reportsection{Summary}{section.summary}{Executive Summary}
+
+\raggedright
+\begin{multicols*}{4}
+\raggedcolumns
+\noindent\begin{tcolorbox}[
+  colback=summaryblue,
+  colframe=summaryblue,
+  arc=6pt,
+  boxrule=1.2pt,
+  left=7pt,
+  right=7pt,
+  top=7pt,
+  bottom=7pt,
+  height=\dimexpr\textheight-\footskip\relax,
+  valign=top,
+  width=\linewidth
+]
+  \color{white}
+  {\fontsize{15pt}{15pt}\bfseries Findings Summary}\par
+  \vspace{0.5em}
+  {\fontsize{22pt}{26pt}\selectfont\bfseries 0 }
+  {\fontsize{14pt}{13pt}\selectfont\bfseries Findings}\par
+  \vspace{0.7em}
+  \summaryitem{Critical \& High}{0}{0}{barfillcritical}
+  \summaryitem{Medium}{0}{0}{barfillmedium}
+  \summaryitem{Low}{0}{0}{barfilllow}
+  \vspace{2em}
+  {\fontsize{15pt}{15pt}\bfseries Findings Remediated}\par
+  \vspace{0.5em}
+  {\fontsize{22pt}{26pt}\selectfont\bfseries 0 }
+  {\fontsize{14pt}{13pt}\selectfont\bfseries of }
+  {\fontsize{22pt}{26pt}\selectfont\bfseries 0 }
+  {\fontsize{14pt}{13pt}\selectfont\bfseries Findings}\par
+  \vspace{0.7em}
+\summaryitem{Critical \& High}{0}{0}{barfillcritical}
+\summaryitem{Medium}{0}{0}{barfillmedium}
+\summaryitem{Low}{0}{0}{barfilllow}
+\end{tcolorbox}
+\columnbreak
+\headingFour{Synopsis}
+Introduction here!
+
+\headingFour{Remediations}
+Remediations found here!
+
+\headingFour{Key Findings}
+Key findings here!
+
+% Insert findings plot here
+
+\newpage
+\end{multicols*}
+
+\begin{multicols*}{3}
+\raggedcolumns
+
+\headingFour{Strategic Recommendations}
+Strategic recommendations here!
+
+\columnbreak
+
+\headingTwo{Methodology and Coverage}
+Describe methodology and coverage here!
+
+\end{multicols*}
+
+\newpage
+
+\reportsection{Scope}{section.scope}{Engagement Scope and Coverage}
+
+\begin{multicols*}{3}
+\raggedcolumns
+
+Scope here!
+
+% Topology map here
+
+\headingTwo{Observed Strengths}
+Observed strengths here!
+
+\headingTwo{Key Opportunities for Improvement}
+
+\headingThree{Key Opportunity 1}
+Key opportunity 1
+
+\headingThree{Key Opportunity 2}
+Key opportunity 2
+
+\end{multicols*}
+
+\newpage
+
+\reportsection{Findings}{section.findings}{Technical Findings}
+
+\begin{multicols*}{3}
+
+The \textbf{Comprehensive Cybersecurity Risk Index (CCRI)} assigns one of five levels of severity to each technical finding. Each vulnerability’s CCRI score is calculated based on its \textit{Vulnerability Severity}, \textit{Likelihood of exploitation} within the client’s infrastructure, and potential \textit{Business Impact}. All of these metrics use a 1-10 scale. 
+
+The radar chart corresponding to each finding visually identifies the specific metrics that comprise the CCRI, as well as the \textit{Effort to Fix} metric that expresses the time, human effort, and financial resources required to remediate or mitigate the finding.
+
+\columnbreak
+\vspace{1em}
+\noindent\makebox[\columnwidth][l]{%
+  \parbox{\columnwidth}{%
+    \begin{tcolorbox}[
+      colback=white,
+      colframe=black!0,
+      arc=0pt,
+      boxrule=0pt,
+      left=10pt,
+      right=10pt,
+      top=0pt,
+      bottom=10pt
+    ]
+      \centering{\bfseries CCRI Metric Definitions}\par\vspace{6pt}
+      \metricbox{Vulnerability Severity}{Core metric tracking the inherent gravity of the vulnerability irrespective of situational context and mitigations.}\par\vspace{2pt}
+      \metricbox{Ease of Exploitation}{Defines the level of sophistication and expertise required to successfully exploit the vulnerability.}\par\vspace{2pt}
+      \metricbox{Business Impact}{The potential impact of the finding on the client’s business processes, reputation, and regulatory compliance.}\par\vspace{2pt}
+      \metricbox{Exposure}{Specific degree to which the vulnerability is exposed in the client’s infrastructure.}\par\vspace{2pt}
+      \metricbox{Effort to Fix}{Expresses the time, human effort, and financial resources required to remediate or mitigate the finding.}
+    \end{tcolorbox}
+  }%
+}
+
+\columnbreak
+\vspace{1em}
+\noindent\makebox[\columnwidth][l]{%
+  \parbox{\columnwidth}{%
+    \begin{tcolorbox}[
+      colback=white,
+      colframe=black!0,
+      arc=0pt,
+      boxrule=0pt,
+      left=10pt,
+      right=10pt,
+      top=0pt,
+      bottom=10pt
+    ]
+      \centering{\bfseries CCRI Score Definitions}\par\vspace{6pt}
+      \severitybox{severitycritical}{Critical (C.\#)}{8--10}{Exploitation could present an existential threat to the client, leading to loss of life, severe impact on availability of core services, unsustainable regulatory fines, or profound reputational impact.}\par\vspace{2pt}
+      \severitybox{severityhigh}{High (H.\#)}{7--8}{Exploitation could degrade core services, impact business operations, cause significant regulatory risk or reputational impact.}\par\vspace{2pt}
+      \severitybox{severitymedium}{Medium (M.\#)}{5--7}{Exploitation could have a moderate impact on business operations or minor regulatory and reputational consequences.}\par\vspace{2pt}
+      \severitybox{severitylow}{Low (L.\#)}{2--5}{Exploitation would have minimal impact on business operations with little or no regulatory or reputational implications.}\par\vspace{2pt}
+      \severitybox{severityinfo}{Informational (I.\#)}{}{Included for reference as an informational finding.}
+    \end{tcolorbox}
+  }%
+}
+
+\end{multicols*}
+
+\newpage
+
+% Add findings here
+
+\newpage
+
+\disablefindingstyle
+
+\reportsection{Appendix}{section.appendix}{Appendix}
+
+\end{document}

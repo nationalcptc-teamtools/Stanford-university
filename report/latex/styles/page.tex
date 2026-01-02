@@ -1,0 +1,202 @@
+
+
+\input{styles/colors}
+\definecolor{headerblue}{HTML}{1F5E9C}
+
+% ===========================
+% styles.tex — Global styling
+% ===========================
+
+% --- Fonts ---
+\usepackage{montserrat}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\seriesdefault}{l}
+
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0pt}
+
+% --- Text flow ---
+\usepackage[none]{hyphenat}
+\usepackage{ragged2e}
+\AtBeginDocument{\RaggedRight}
+
+% --- Margin control ---
+\usepackage[left=0.4in,right=0.4in,top=0.7in,bottom=0.7in]{geometry}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\graphicspath{{findings/images/}{./findings/images/}{images/}{./images/}}
+
+% --- Fancy footer/header ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+% Clear previous header/footer
+\fancyhf{}
+
+% --- Header ---
+\newcommand{\reportnavactive}{Findings}
+\newcommand{\reportnavitem}[1]{%
+  \begingroup%
+  \edef\reportnavitemtmp{#1}%
+  \edef\reportnavactivetmp{\reportnavactive}%
+  \ifx\reportnavitemtmp\reportnavactivetmp%
+    \textbf{\underline{\strut #1}}%
+  \else%
+    #1%
+  \fi%
+  \endgroup%
+}
+
+\usepackage{eso-pic}
+\newcommand{\sectiontopanchor}[1]{%
+  \AddToShipoutPictureFG*{%
+    \AtPageUpperLeft{\hypertarget{#1}{}}%
+  }%
+}
+% Mark the top of the text area so overlays can align below the header.
+\newcommand{\textareatopmark}{%
+  \AddToShipoutPictureFG{%
+    \AtTextUpperLeft{%
+      \tikz[remember picture,overlay]\coordinate (textareatop) at (0,0);%
+    }%
+  }%
+}
+\textareatopmark
+
+\usepackage[hidelinks]{hyperref}
+\hypersetup{linktoc=all}
+\makeatletter
+\makeatother
+\makeatletter
+\let\report@origcontentsline\contentsline
+\def\report@toc@target{}
+\def\report@dottedtocline#1#2#3#4#5{%
+  \ifnum #1>\c@tocdepth \else
+    \vskip \z@ \@plus.2\p@
+    {\leftskip #2\relax \rightskip \@tocrmarg \parfillskip -\rightskip
+     \parindent #2\relax\@afterindenttrue
+     \interlinepenalty\@M
+     \leavevmode
+     \@tempdima #3\relax
+     \advance\leftskip \@tempdima \hskip -\leftskip
+     \hyper@linkstart{link}{\report@toc@target}%
+     #4\nobreak\leaders\hbox{$\m@th
+        \mkern \@dotsep mu\hbox{.}\mkern \@dotsep mu$}\hfill
+     \nobreak\hb@xt@\@pnumwidth{\hfil #5}%
+     \hyper@linkend
+     \par}%
+  \fi}
+\renewcommand{\contentsline}[4]{%
+  \@ifundefined{hyper@linkstart}{%
+    \report@origcontentsline{#1}{#2}{#3}{#4}%
+  }{%
+    \begingroup
+      \def\report@toc@target{#4}%
+      \let\report@orig@dottedtocline\@dottedtocline
+      \let\@dottedtocline\report@dottedtocline
+      \csname l@#1\endcsname{#2}{#3}%
+      \let\@dottedtocline\report@orig@dottedtocline
+    \endgroup
+  }%
+}
+\makeatother
+\newcommand{\reportnavitemlink}[2]{%
+  \hyperlink{#2}{\reportnavitem{#1}}%
+}
+\newcommand{\reportheadernav}{%
+  {\normalfont\fontseries{m}\selectfont
+   \arrayrulecolor{headerblue}%
+   \color{headerblue}%
+   \setlength{\arrayrulewidth}{1.2pt}%
+   \fontsize{12pt}{8.5pt}\selectfont%
+   \begin{tabular}{@{}l|l|l|l|l@{}}
+     \reportnavitemlink{Contents}{section.contents} &
+     \reportnavitemlink{Summary}{section.summary} &
+     \reportnavitemlink{Scope}{section.scope} &
+     \reportnavitemlink{Findings}{section.findings} &
+     \reportnavitemlink{Appendix}{section.appendix}
+   \end{tabular}%
+  }%
+}
+\newcommand{\reportheaderright}{%
+  {\normalfont\fontseries{m}\selectfont
+   \color{headerblue}\fontsize{12pt}{8.5pt}\selectfont\bfseries%
+   \begin{tabular}{@{}l@{\hspace{1.2em}}r@{}}
+     Penetration Test Report & \thepage
+   \end{tabular}%
+  }%
+}
+\fancyhfoffset[L,R]{\dimexpr\oddsidemargin+1in\relax}
+\setlength{\headsep}{3em}
+\setlength{\footskip}{0.45in}
+\fancyhead[L]{\hspace*{0.4in}\reportheadernav}
+\fancyhead[R]{\reportheaderright\hspace*{0.3in}}
+\fancyfoot[C]{\TLPRed}
+\newcommand{\headruleoffset}{0.1em}
+\renewcommand{\headrulewidth}{1.2pt}
+\renewcommand{\headrule}{\raisebox{\headruleoffset}{\hbox to\headwidth{\color{headerblue}\leaders\hrule height \headrulewidth\hfill}}}
+\renewcommand{\footrulewidth}{0pt}
+
+% Make plain style (title page, \chapter pages, etc.) match fancy
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \fancyfoot[C]{\TLPRed}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \renewcommand{\footrulewidth}{0pt}%
+}
+
+% ---------------- Table of Contents ---------- %
+\makeatletter
+\newcommand{\reporttableofcontents}{%
+  \begingroup
+    \setlength{\parskip}{0.4em}%
+    \setlength{\parindent}{0pt}%
+    \setcounter{tocdepth}{2}%
+    \@starttoc{toc}%
+  \endgroup
+}
+\makeatother
+\makeatletter
+\newcommand{\reporttoccolor}{\normalfont\fontseries{m}\selectfont\color{headingOneColor}}%
+\renewcommand{\l@section}[2]{\@dottedtocline{1}{0em}{1.5em}{\reporttoccolor\fontseries{sb}\selectfont #1}{\reporttoccolor\fontseries{sb}\selectfont #2}}%
+\renewcommand{\l@subsection}[2]{\@dottedtocline{2}{1.5em}{2.3em}{\reporttoccolor #1}{\reporttoccolor #2}}%
+\renewcommand{\l@subsubsection}[2]{\@dottedtocline{3}{3.8em}{3.2em}{\reporttoccolor #1}{\reporttoccolor #2}}%
+\renewcommand{\l@paragraph}[2]{\@dottedtocline{4}{7em}{4.1em}{\reporttoccolor #1}{\reporttoccolor #2}}%
+\makeatother
+\newcommand{\reporttocentry}[3]{%
+  \addtocontents{toc}{\protect\contentsline{#1}{#2}{\thepage}{#3}}%
+}
+\newcommand{\reportsection}[3]{%
+  \renewcommand{\reportnavactive}{#1}%
+  \sectiontopanchor{#2}%
+  \headingOne{#3}%
+  \reporttocentry{section}{#3}{#2}%
+}
+
+% ---------------- Headings -------------- %
+\newcommand{\headingOne}[1]{
+  \vspace*{-2.6em}
+  % Draw the heading text
+  \noindent{\LARGE\fontseries{sb}\selectfont\color{headingOneColor} #1}\par
+  \vspace{-1.8em}
+  % Draw the line under the header
+  \noindent{\color{black!30}\rule{\linewidth}{1pt}}\par
+}
+
+\newcommand{\headingTwo}[1]{
+  \phantomsection%
+  \noindent{\LARGE\fontseries{m}\selectfont\color{black!30} \underline{\color{headingOneColor}#1}}\par
+  \addcontentsline{toc}{subsection}{#1}%
+}
+
+\newcommand{\headingThree}[1]{
+  \noindent{\LARGE\mdseries\color{headingThreeColor} \textit{#1}}\par
+  \vspace{-0.7em}
+}
+
+\newcommand{\headingFour}[1]{
+  \noindent{\large\bfseries\color{headingFourColor} #1}\par
+  \vspace{-0.7em}
+}

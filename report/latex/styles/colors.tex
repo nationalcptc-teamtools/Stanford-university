@@ -1,0 +1,39 @@
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+\definecolor{headingOneColor}{HTML}{1C4587}
+\definecolor{headingThreeColor}{HTML}{3C78D8}
+\definecolor{headingFourColor}{HTML}{4B5F98}
+
+\definecolor{findingGradientStart}{HTML}{FFFFFF}
+\definecolor{findingSidebarGradientStart}{HTML}{FFFFFF}
+\definecolor{findingGradientEnd}{HTML}{B7D9F2}
+\definecolor{findingSidebarGradientEnd}{HTML}{BEBEBE}
+\definecolor{sidebarborder}{HTML}{888888}
+\definecolor{barbg}{HTML}{E0E0E0}
+
+\definecolor{tlpred}{HTML}{FF2B2B}
+
+\definecolor{severitycritical}{HTML}{A0210B}
+\definecolor{severityhigh}{HTML}{E41111}
+\definecolor{severitymedium}{HTML}{E27909}
+\definecolor{severitylow}{HTML}{F1C232}
+\definecolor{severityinfo}{HTML}{6D9EEB}
+
+% TLP box macro. First argument is the color, the second 
+% is the text to put in the box
+\newtcbox{\tlpbadge}[2][]{
+  on line,
+  arc=3pt,                  
+  colframe=#2,
+  colback=#2!15,
+  boxrule=0.6pt,
+  left=4pt,
+  right=4pt,
+  top=2pt,
+  bottom=2pt,
+  fontupper=\bfseries\color{#2},
+}
+
+% Convenience wrappers
+\newcommand{\TLPRed}{\tlpbadge{tlpred}{TLP:RED}}
